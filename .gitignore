@@ -1,3 +1,8 @@
+# Files projects
+datasets/Covid19
+.conda
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
