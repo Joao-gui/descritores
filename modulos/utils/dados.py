@@ -13,7 +13,7 @@ def ler_imagem(caminho_arquivo):
     # Verifica se é uma imagem colorida
     if len(imagem.shape) > 2:
         # Conveerte de BGR para RGB
-        imagem = cv2.cvtColor(imagem, cv2.COLOR_BRG2RGB)
+        imagem = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
     # Conveerte a imagem para 8 bits por canal (caso ela teenha uma profundidade diferente)
     imagem_8bits = cv2.convertScaleAbs(imagem)
     return imagem_8bits
@@ -45,7 +45,7 @@ def carregar_imagens(diretorio):
         for subpasta in os.listdir(diretorio):
             caminho_subpasta = os.path.join(diretorio, subpasta)
 
-            if os.pat.isdir(caminho_subpasta): # Verifica se o caminho é uma subpasta
+            if os.path.isdir(caminho_subpasta): # Verifica se o caminho é uma subpasta
                 rotulo = subpasta # O nome da subpasta é utilizado como rótulo
 
                 # Itera sobre cada arquivo na subpasta
@@ -57,10 +57,10 @@ def carregar_imagens(diretorio):
 
                     if imagem is not None: # Verifica se a imagem foi carregada com sucesso
                         imagens_memoria.append(imagem) # Armazena a imagem
-                        rotulo.append(rotulo) # Armazena o rótulo correspondente
+                        rotulos.append(rotulo) # Armazena o rótulo correspondente
                     pbar.update(1) # Atualiza a barra de progresso a cada imagem carregada
 
-    return imagens_memoria, rotulo
+    return imagens_memoria, rotulos
 
 # Verificar caminho do diretorio
 def verificar_e_criar_diretorios(caminho_diretorio):
