@@ -85,6 +85,9 @@ def run():
     if "n_grupos" not in st.session_state:
         st.session_state.n_grupos = None
 
+    if "tempo_treinamento" not in st.session_state:
+        st.session_state.tempo_treinamento = None
+
     # ==========================================================
     # ABAS
     # ==========================================================
@@ -227,6 +230,8 @@ def run():
             "Random Forest"
         ]
     )
+
+    st.session_state.classificador = classificador
 
     st.sidebar.markdown("---")
     st.sidebar.subheader("Resumo")
@@ -441,3 +446,136 @@ def run():
                 )
 
                 st.write(f"**Arquivos salvos em:** {CAMINHO_CARACTERISTICAS_DIR}")
+
+    # ==========================================================
+    # ABA - TREINAMENTO
+    # ==========================================================
+
+    caracteristicas_treino = st.session_state.caracteristicas_treino
+    caracteristicas_teste = st.session_state.caracteristicas_teste
+
+    rotulos_treino = st.session_state.rotulos_treino
+    rotulos_teste = st.session_state.rotulos_teste
+
+    with tab_treinamento:
+
+        st.header("🤖 Treinamento do Modelo")
+
+
+        if caracteristicas_treino is None:
+
+            st.warning(
+                "Primeiro extraia as características."
+            )
+
+
+        elif rotulos_treino is None:
+
+            st.warning(
+                "Rótulos de treinamento não encontrados."
+            )
+
+
+        else:
+
+            st.write(
+                f"**Descritor:** {st.session_state.descritor}"
+            )
+
+            st.write(
+                f"**Classificador:** {classificador}"
+            )
+
+
+            st.divider()
+
+
+            treinar = st.button(
+                "🚀 Treinar Modelo",
+                use_container_width=True
+            )
+
+
+            if treinar:
+
+                inicio = time.time()
+
+
+                with st.spinner("Treinando modelo..."):
+
+
+                    # ======================
+                    # KNN
+                    # ======================
+
+                    if classificador == "KNN":
+
+                        modelo = knn.treinar_knn(
+                            caracteristicas_treino,
+                            rotulos_treino
+                        )
+
+
+                    # ======================
+                    # SVM
+                    # ======================
+
+                    elif classificador == "SVM":
+
+                        modelo = svm.treinar_svm(
+                            caracteristicas_treino,
+                            rotulos_treino
+                        )
+
+
+                    # ======================
+                    # MLP
+                    # ======================
+
+                    elif classificador == "MLP":
+
+                        modelo = mlp.treinar_mlp(
+                            caracteristicas_treino,
+                            rotulos_treino
+                        )
+
+
+                    # ======================
+                    # Random Forest
+                    # ======================
+
+                    elif classificador == "Random Forest":
+
+                        modelo = random_forest.treinar_rf(
+                            caracteristicas_treino,
+                            rotulos_treino
+                        )
+
+
+                tempo = round(time.time() - inicio, 2)
+
+
+                # Guardar modelo
+
+                st.session_state.modelo = modelo
+                st.session_state.classificador = classificador
+                st.session_state.tempo_treinamento = tempo
+
+                st.success("Modelo treinado com sucesso!")
+
+
+                st.metric(
+                    "Tempo de treinamento",
+                    f"{tempo}s"
+                )
+
+                # Salvar modelo noo discoo
+                CAMINHO_MODELO = (f"modelos/{classificador}/modelo.pkl")
+
+                dados.salvar_modelo(modelo, CAMINHO_MODELO)
+
+                st.success("Modelo treinado e salvo com sucesso!")
+
+                st.metric("Tempo de treinamento", f"{tempo}")
+
+                st.write(f"Modelo salvo em: `{CAMINHO_MODELO}`")

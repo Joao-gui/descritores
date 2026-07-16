@@ -4,7 +4,7 @@ from sklearn import svm
 # Treinando com SVM
 def treinar_svm(caracteristicas, rotulos):
     print('Treinando o modelo SVM...')
-    modelo_svm = svm.SVC(kernel='linear', C=1, random_state=42)
+    modelo_svm = svm.SVC(kernel='linear', C=1)
     startTime = time.time()
     modelo_svm.fit(caracteristicas, rotulos)
     elapsedTime = round(time.time() - startTime, 2)
