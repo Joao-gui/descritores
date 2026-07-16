@@ -79,6 +79,12 @@ def run():
     if "classificador" not in st.session_state:
         st.session_state.classificador = None
 
+    if "modelo_kmeans" not in st.session_state:
+        st.session_state.modelo_kmeans = None
+
+    if "n_grupos" not in st.session_state:
+        st.session_state.n_grupos = None
+
     # ==========================================================
     # ABAS
     # ==========================================================
@@ -196,6 +202,11 @@ def run():
         "Dataset",
         lista_datasets
     )
+
+    caracteristicas_treino = None
+    caracteristicas_teste = None
+    modelo_kmeans = None
+    n_grupos = None
 
     descritor = st.sidebar.selectbox(
         "Descritor",
