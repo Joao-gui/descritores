@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 import time
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Extração de descritores SIFT local
 def extrair_descritores_sift_locais(imagens, rotulos):
@@ -152,7 +152,7 @@ def extrai_sift_treinamento(imagens, rotulos):
     return lista_histogramas, modelo_kmeans, n_grupos, rotulos
 
 # Sift Teste
-def extrai_sift_testee(imagens, modelo_kmeans, n_grupos, rotulos):
+def extrai_sift_teste(imagens, modelo_kmeans, n_grupos, rotulos):
     '''
     Extrai descritores SIFT e gera histogramas BoVW para um conjunto de imagens de teste, usando um modelo K-Means pré-treinado.
 

@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from skimage.feature import hog
 from sklearn.decomposition import PCA
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Método Histogram of Oriented Gradients
 def extrair_hog(imagens, orientacoes=6, pixels_por_celula=(12,12), celulas_por_bloco=(3,3), visualizacao=False):

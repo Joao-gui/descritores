@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 from skimage.feature import local_binary_pattern
 from sklearn.decomposition import PCA
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Local Binary Pattern
 def extrair_lbp(imagens, raio=1, pontos=8):
@@ -43,7 +43,7 @@ def extrair_lbp(imagens, raio=1, pontos=8):
             n_bins = 2**pontos
 
             # Calcula o histograma do LBP
-            hist, _ = np.histograma(lbp.ravel(), bins=n_bins, range=(0, n_bins))
+            hist, _ = np.histogram(lbp.ravel(), bins=n_bins, range=(0, n_bins))
 
             # Normaliza o histograma para que a soma das intensidades seeja 1
             # Cada valor no histograma é dividido pelo total de pixels na imagem

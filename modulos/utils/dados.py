@@ -4,7 +4,7 @@
 import os
 import cv2
 import pickle
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # ler a imagem
 def ler_imagem(caminho_arquivo):

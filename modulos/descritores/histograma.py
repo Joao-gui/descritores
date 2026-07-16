@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 from sklearn.decomposition import PCA
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Extrai histograma escala de cinza
 def extrai_histograma_escala_cinza(imagens):

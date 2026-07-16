@@ -67,11 +67,17 @@ def run():
     if "modelo" not in st.session_state:
         st.session_state.modelo = None
 
-    if "encode" not in st.session_state:
+    if "encoder" not in st.session_state:
         st.session_state.encoder = None
 
     if "rotulos_previstos" not in st.session_state:
         st.session_state.rotulos_previstos = None
+
+    if "descritor" not in st.session_state:
+        st.session_state.descritor = None
+
+    if "classificador" not in st.session_state:
+        st.session_state.classificador = None
 
     # ==========================================================
     # ABAS
@@ -344,5 +350,83 @@ def run():
                 st.session_state.encoder = encoder
                 st.session_state.rotulos_treino = rotulos_codificados_treino
                 st.session_state.rotulos_teste = rotulos_codificados_teste
+                st.session_state.rotulos_originais_treino = rotulos_treino
+                st.session_state.rotulos_originais_teste = rotulos_teste
 
-                
+                # Escolher Descritor
+                if descritor == "Histograma":
+                    caracteristicas_treino = (
+                        histograma.extrai_histograma_escala_cinza(imagens_treino)
+                    )
+
+                    caracteristicas_teste = (
+                        histograma.extrai_histograma_escala_cinza(imagens_teste)
+                    )
+
+                elif descritor == "HOG":
+                    caracteristicas_treino = (
+                        hog.extrair_hog(imagens_treino)
+                    )
+
+                    caracteristicas_teste = (
+                        hog.extrair_hog(imagens_teste)
+                    )
+
+                elif descritor == "LBP":
+                    caracteristicas_treino = (
+                        lbp.extrair_lbp(imagens_treino)
+                    )
+
+                    caracteristicas_teste = (
+                        lbp.extrair_lbp(imagens_teste)
+                    )
+
+                elif descritor == "SIFT":
+                    # Treino
+                    (caracteristicas_treino, modelo_kmeans, n_grupos, rotulos_codificados_treino) = sift.extrai_sift_treinamento(imagens_treino, rotulos_codificados_treino)
+                    #Teste
+                    (caracteristicas_teste, rotulos_codificados_teste) = sift.extrai_sift_teste(imagens_teste, modelo_kmeans, n_grupos, rotulos_codificados_teste)
+
+                # Guardar no session state
+                st.session_state.caracteristicas_treino = caracteristicas_treino
+                st.session_state.caracteristicas_teste = caracteristicas_teste
+                st.session_state.descritor = descritor
+                st.session_state.modelo_kmeans = modelo_kmeans
+                st.session_state.n_grupos = n_grupos
+
+                # Salvar no disco
+                CAMINHO_CARACTERISTICAS_DIR = "features/caracteristicas/" + descritor
+                dados.salvar_caracteristicas(
+                    caracteristicas_treino, CAMINHO_CARACTERISTICAS_DIR + "/treino.pkl"
+                )
+
+                dados.salvar_caracteristicas(
+                    caracteristicas_teste, CAMINHO_CARACTERISTICAS_DIR + "/teste.pkl"
+                )
+
+                # Resumo
+                st.success("Caracteristicas extraidas com sucesso!")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.metric(
+                        "Imagens de Treino",
+                        len(caracteristicas_treino)
+                    )
+
+                with col2:
+                    st.metric(
+                        "Imagens de Teste",
+                        len(caracteristicas_teste)
+                    )
+
+                st.write("Formato das caracteristicas:")
+
+
+                st.code(
+                    f"Treino: {caracteristicas_treino.shape}\n"
+                    f"Teste: {caracteristicas_teste.shape}"
+                )
+
+                st.write(f"**Arquivos salvos em:** {CAMINHO_CARACTERISTICAS_DIR}")
