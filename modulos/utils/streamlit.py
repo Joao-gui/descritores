@@ -232,8 +232,6 @@ def run():
         ]
     )
 
-    st.session_state.classificador = classificador
-
     st.sidebar.markdown("---")
     st.sidebar.subheader("Resumo")
     st.sidebar.write(f"**Dataset:** {dataset}")
@@ -297,7 +295,7 @@ def run():
 
             st.dataframe(
                 df,
-                use_container_width=True
+                width='stretch'
             )
 
         else:
@@ -319,7 +317,7 @@ def run():
 
         extrair = st.button(
             "🚀 Extrair Características",
-            use_container_width=True
+            width='stretch'
         )
 
         # Quando clicar
@@ -474,7 +472,7 @@ def run():
 
             treinar = st.button(
                 "🚀 Treinar Modelo",
-                use_container_width=True
+                width='stretch'
             )
 
             if treinar:
@@ -531,7 +529,7 @@ def run():
                 st.session_state.classificador = classificador
                 st.session_state.tempo_treinamento = tempo
 
-                # Salvar modelo noo discoo
+                # Salvar modelo noo disco
                 CAMINHO_MODELO = (f"modelos/{classificador}/modelo.pkl")
 
                 dados.salvar_modelo(modelo, CAMINHO_MODELO)
@@ -557,15 +555,25 @@ def run():
             st.warning("Treine um modelo antes de realizar a classificação.")
 
         else:
+            classificador_treinado = st.session_state.classificador
+            
             st.write(f"**Descritores:** {st.session_state.descritor}")
-            st.write(f"**Classificador:** {st.session_state.classificador}")
+            st.write(f"**Classificador:** {classificador_treinado}")
+
+            if classificador != classificador_treinado:
+                st.warning(
+                    f"O menu lateral está em **{classificador}**, mas o modelo em memória "
+                    f"foi treinado com **{classificador_treinado}**. Volte na aba "
+                    "'🤖 Treinamento' e clique em 'Treinar Modelo' para treinar com o "
+                    "classificador selecionado antes de gerar o resultado."
+                )
 
             if st.session_state.tempo_treinamento is not None:
                 st.write(f"**Tempo de treinamento:** {st.session_state.tempo_treinamento:.2f}s")
 
             st.divider()
 
-            prever = st.button("🚀 Realizar Classificação", use_container_width=True)
+            prever = st.button("🚀 Realizar Classificação", width='stretch')
 
             if prever:
                 with st.spinner("Realizando classificação..."):
@@ -573,25 +581,25 @@ def run():
                     # ==========================================
                     # KNN
                     # ==========================================
-                    if classificador == "KNN":
+                    if classificador_treinado == "KNN":
                         rotulos_previstos = knn.testar_knn(modelo, caracteristicas_teste)
 
                     # ==========================================
                     # SVM
                     # ==========================================
-                    elif classificador == "SVM":
+                    elif classificador_treinado == "SVM":
                         rotulos_previstos = svm.testar_svm(modelo, caracteristicas_teste)
 
                     # ==========================================
                     # MLP
                     # ==========================================
-                    elif classificador == "MLP":
+                    elif classificador_treinado == "MLP":
                         rotulos_previstos = mlp.testar_mlp(modelo, caracteristicas_teste)
 
                     # ==========================================
                     # RANDOM FEOREST
                     # ==========================================
-                    elif classificador == "Random Forest":
+                    elif classificador_treinado == "Random Forest":
                         rotulos_previstos = random_forest.testar_rf(modelo, caracteristicas_teste)
 
                     st.session_state.rotulos_previstos = rotulos_previstos
@@ -615,8 +623,8 @@ def run():
                 CAMINHO_RESULTADOS = os.path.join(
                     "resultados",
                     dataset,
-                    descritor,
-                    classificador.replace(" ", "")
+                    st.session_state.descritor,
+                    classificador_treinado.replace(" ", "")
                 )
 
                 os.makedirs(CAMINHO_RESULTADOS, exist_ok=True)
