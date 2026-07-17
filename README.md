@@ -4,6 +4,12 @@
 
 Sistema de visão computacional para classificação de imagens. O projeto combina diferentes descritores de imagem e algoritmos de machine learning para encontrar a melhor abordagem de classificação.
 
+![gif1](README_images/gif1.gif)
+
+![gif2](README_images/gif2.gif)
+
+![gif3](README_images/gif3.gif)
+
 ## 📋 Sumário
 
 - Sobre o Projeto
