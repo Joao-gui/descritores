@@ -8,7 +8,7 @@ def treinar_mlp(caracteristicas, rotulos):
     modelo_mlp = MLPClassifier(
         random_state=1,
         # Quantidade de camadas ocultas e numero de neurônios em cada
-        hidden_layer_sizes=(5000),
+        hidden_layer_sizes=(250, 150, 50),
         max_iter=1000
     )
     startTime = time.time()

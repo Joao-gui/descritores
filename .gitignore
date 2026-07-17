@@ -3,6 +3,7 @@ datasets/Covid19
 .conda
 .vscode
 *.pkl
+estrutura.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

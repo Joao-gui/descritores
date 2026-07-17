@@ -89,6 +89,21 @@ def run():
     if "tempo_treinamento" not in st.session_state:
         st.session_state.tempo_treinamento = None
 
+    if "features_carregadas" not in st.session_state:
+        st.session_state.features_carregadas = False
+
+    if "modelo_carregado" not in st.session_state:
+        st.session_state.modelo_carregado = False
+
+    if "rotulos_originais_treino" not in st.session_state:
+        st.session_state.rotulos_originais_treino = None
+
+    if "rotulos_originais_teste" not in st.session_state:
+        st.session_state.rotulos_originais_teste = None
+
+    if "pca_ajustado" not in st.session_state:
+        st.session_state.pca_ajustado = None
+
     # ==========================================================
     # ABAS
     # ==========================================================
@@ -530,7 +545,7 @@ def run():
                 st.session_state.tempo_treinamento = tempo
 
                 # Salvar modelo noo disco
-                CAMINHO_MODELO = (f"modelos/{classificador}/modelo.pkl")
+                CAMINHO_MODELO = (f"modelos/{classificador}/{descritor}.pkl")
 
                 dados.salvar_modelo(modelo, CAMINHO_MODELO)
 
