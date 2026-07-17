@@ -1,5 +1,9 @@
 # Files projects
-datasets/Covid19
+#datasets/Covid19/
+*.jpg
+*.png
+*.jpeg
+*.JPG
 .conda
 .vscode
 *.pkl
