@@ -2,10 +2,10 @@ import numpy as np
 import cv2
 from skimage.feature import hog
 from sklearn.decomposition import PCA
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Método Histogram of Oriented Gradients
-def extrair_hog(imagens, orientacoes=6, pixels_por_celula=(12,12), celulas_por_bloco=(3,3), visualizacao=False):
+def extrair_hog(imagens, orientacoes=6, pixels_por_celula=(12,12), celulas_por_bloco=(3,3), visualizacao=False, pca=None, n_componentes=50):
     '''
     Extrai características HOG de uma lista de imagens.
 
@@ -15,9 +15,13 @@ def extrair_hog(imagens, orientacoes=6, pixels_por_celula=(12,12), celulas_por_b
         pixels_por_celula (tuple, optional): Número de pixels por célula no cálculo do HOG. Defaults to (12,12).
         celulas_por_bloco (tuple, optional): Número de células por bloco no cálculo do HOG. Defaults to (3,3).
         visualizacao (bool, optional): Se True, retorna a imagem HOG visualizada jjunto com as características. Defaults to False.
+        pca (PCA, optional): PCA já treinado (fit) no conjunto de TREINO. Quando fornecido, só é usado para transform (sem re-treinar). Quando None,
+            um novo PCA é treinado aqui (use isso apenas para o treino).
+        n_componentes (int, optional): Número de componentes do PCA quando um novo PCA precisa ser treinado. Defaults to 50.
 
     Return:
         :Array numpy contendo as características HOG de cada imagem.
+        :O PCA utilizado (recém-treinado ou o mesmo recebido), para reaproveitar no outro conjunto (treino/teste).
     '''
     # Se a imagens têm diferentes tamanhos, o vetor HOG resultante
     # pode caria em comprimento. O redimensionamento das imagens pode
@@ -53,13 +57,13 @@ def extrair_hog(imagens, orientacoes=6, pixels_por_celula=(12,12), celulas_por_b
 
         # REDUÇÃO DA DIMENSIONALIDADE COM PCA
         # n_components_pca: Número de componentes principais que serão mantidos
-        n_samples, n_features = lista_hog_array.shape
-        n_components_pca = 50
+        if pca is None:
+            pca = PCA(n_components=n_componentes)
+            lista_hog_reduzidos = pca.fit_transform(lista_hog_array)
+        else:
+            lista_hog_reduzidos = pca.transform(lista_hog_array)
 
-        pca = PCA(n_components=n_components_pca)
-        lista_hog_reduzidos = pca.fit_transform(lista_hog_array)
-
-        return lista_hog_reduzidos
+        return lista_hog_reduzidos, pca
     except ValueError:
         print("Error: As características HOG têm tamanhos inconsistentes. Retornando lista.")
         return np.array(lista_hog)

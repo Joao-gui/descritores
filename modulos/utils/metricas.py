@@ -28,30 +28,35 @@ def matriz_confusao(nomes_das_classes, rotulos_verdadeiros, rotulos_previstos, c
     # Calcula a acurácia do modelo em percentual
     acuracia = metrics.accuracy_score(rotulos_verdadeiros, rotulos_previstos)*100
     # Define o tamanho da fonte para a matriz de confusão e rótulos
-    sns.set_theme(font_scale=1.2) # Ajuste o valor conforme necessário para aumentar a fonte
+    sns.set_theme(font_scale=1.0) # Ajuste o valor conforme necessário para aumentar a fonte
     # Gera a figura da matriz de confusão usando o pacote seaborn
-    plt.figure(figsize=(4,3))
+    plt.figure(figsize=(5,4))
     sns.heatmap(conf_matriz, annot=True, cmap='Blues', fmt='g', cbar=False,
-                annot_kws={'size': 12}, linewidths=0.4, square=True)
+                annot_kws={'size': 14}, linewidths=0.5, square=True)
     # Adiciona os nomes das classes, rótulos, título, subtítulo
-    plt.xticks(np.arange(len(nomes_das_classes)) + 0.5, nomes_das_classes, rotation=0, ha='center', fontsize=14)
-    plt.yticks(np.arange(len(nomes_das_classes)) + 0.5, nomes_das_classes, rotation=0, va='center', fontsize=14)
-    plt.xlabel('Rótulos Previstos', fontsize=14)
-    plt.ylabel('Rótulos Verdadeiros', fontsize=14)
-    plt.title('Matriz de Confusão', fontsize=18, weight='bold', x=0.25, y=1.15)
-    plt.suptitle(f'Acurácia do Modelo: {acuracia:.2f}%', fontsize=14, x=0.37, y=0.98)
+    plt.xticks(np.arange(len(nomes_das_classes)) + 0.5, nomes_das_classes, rotation=0, ha='center', fontsize=8)
+    plt.yticks(np.arange(len(nomes_das_classes)) + 0.5, nomes_das_classes, rotation=0, va='center', fontsize=8)
+    plt.xlabel('Rótulos Previstos', fontsize=12)
+    plt.ylabel('Rótulos Verdadeiros', fontsize=12)
+    plt.title('Matriz de Confusão', fontsize=16, weight='bold', x=0.25, y=1.15)
+    plt.suptitle(f'Acurácia do Modelo: {acuracia:.2f}%', fontsize=12, x=0.37, y=0.98)
     verifica_e_cria_diretorios(caminho_arquivo)
     # Salva a figura da matriz de confusão
-    plt.savefig(caminho_arquivo, dpi=300)
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(caminho_arquivo, dpi=300, bbox_inches='tight')
+    plt.close()
 
 # Relatorio classificação
 def relatorio_classificacao(nomes_das_classes, rotulos_verdadeiros, rotulos_previstos, caminho_arquivo):
     # Gera o relatório de classificação
-    report = metrics.classification_report(rotulos_verdadeiros, rotulos_previstos, target_names=nomes_das_classes, output_dict=True)
+    report = metrics.classification_report(rotulos_verdadeiros, rotulos_previstos, target_names=nomes_das_classes, output_dict=True, zero_division=0)
 
     # Converte o relatório para um DataFrame
     report_df = pd.DataFrame(report).transpose()
+
+    report_df = report_df.fillna(0)
+
+    report_df = report_df.astype(float)
 
     # Define o tamanho da figura e o estilo do seaborn
     plt.figure(figsize=(6, len(report_df) / 2))
@@ -68,5 +73,6 @@ def relatorio_classificacao(nomes_das_classes, rotulos_verdadeiros, rotulos_prev
     plt.yticks(fontsize=12, rotation=0)
     verifica_e_cria_diretorios(caminho_arquivo)
     # Salva a figura da tabela do relatório de classificação
+    plt.tight_layout()
     plt.savefig(caminho_arquivo, dpi=300)
-    plt.show()
+    plt.close()

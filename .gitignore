@@ -1,7 +1,13 @@
 # Files projects
-datasets/Covid19
+#datasets/Covid19/
+*.jpg
+*.png
+*.jpeg
+*.JPG
 .conda
 .vscode
+*.pkl
+estrutura.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 import time
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Extração de descritores SIFT local
 def extrair_descritores_sift_locais(imagens, rotulos):
@@ -94,7 +94,7 @@ def treinar_kmeans(lista_descritores_sift):
 # Gera o histogramas do BoVW
 def gerar_histogramas_bovw(lista_descritores_sift, modelo_kmeans, n_grupos):
     '''
-    Cibstrói histogramas globais para cada imagem usando a técnica Bag of Visual Words (BoVW)
+    Constrói histogramas globais para cada imagem usando a técnica Bag of Visual Words (BoVW)
 
     Args:
         lista_descritores_sift (lista de numpy arrays): Lista de arrats contendo os descritores SIFT para cada imagem. 
@@ -124,7 +124,7 @@ def gerar_histogramas_bovw(lista_descritores_sift, modelo_kmeans, n_grupos):
         histogramas.append(histogram)
     # Retorna uma matriz de tamanho num_imagens x num_clusters (tamanho de cada histograma)
     # essa matriz será salva em arquvivo como as features extraídas pelo método SIFT
-    return np.array(histogramas, dtype=object)
+    return np.array(histogramas)
 
 # Sift Treinamento
 def extrai_sift_treinamento(imagens, rotulos):
@@ -152,7 +152,7 @@ def extrai_sift_treinamento(imagens, rotulos):
     return lista_histogramas, modelo_kmeans, n_grupos, rotulos
 
 # Sift Teste
-def extrai_sift_testee(imagens, modelo_kmeans, n_grupos, rotulos):
+def extrai_sift_teste(imagens, modelo_kmeans, n_grupos, rotulos):
     '''
     Extrai descritores SIFT e gera histogramas BoVW para um conjunto de imagens de teste, usando um modelo K-Means pré-treinado.
 
