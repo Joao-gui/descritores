@@ -18,7 +18,7 @@ Sistema de visão computacional para classificação de imagens. O projeto combi
 
 ## 🎯 Sobre o Projeto
 
-Este projeto foi desenvolvido para a disciplina de Visão Computacional e tem como objetivo classificar imagens m geral, porém para este projeto espcifico foi para imagens de raio-X em duas categorias:
+Este projeto foi desenvolvido para a disciplina de Visão Computacional e tem como objetivo classificar imagens em geral, porém para este projeto específico foi utilizado para imagens de raio-X, separado em duas categorias:
 
 - COVID-19 (positivo para COVID-19)
 - NORMAL (saudável)
@@ -36,12 +36,12 @@ O sistema permite comparar diferentes combinações de descritores de caracterí
 
 ### Classificadores
 
-| Classificador  | Descrição                       |
-| -------------- | --------------------------------- |
-| KNN            | K-Nearest Neighbors               |
-| SVM            | Support Vector Machine            |
-| MLP            | Multi-Layer Perceptron            |
-| Random Forest  | Floresta de árvores de decisão  |
+| Classificador | Descrição                      |
+| ------------- | -------------------------------- |
+| KNN           | K-Nearest Neighbors              |
+| SVM           | Support Vector Machine           |
+| MLP           | Multi-Layer Perceptron           |
+| Random Forest | Floresta de árvores de decisão |
 
 ## 📁 Estrutura do Projeto
 
@@ -120,16 +120,16 @@ descritores/
 
 ## 🛠️ Tecnologias Utilizadas
 
-| Tecnologia   | Versão | Finalidade                   |
-| ------------ | ------- | ---------------------------- |
-| Python       | 3.8+    | Linguagem principal          |
-| Streamlit    | 1.28+   | Interface web                |
-| OpenCV       | 4.8+    | Processamento de imagens     |
-| Scikit-learn | 1.3+    | Machine learning             |
-| NumPy        | 1.24+   | Computação numérica       |
-| Pandas       | 2.0+    | Manipulação de dados       |
-| Matplotlib   | 3.7+    | Visualização de dados      |
-| Seaborn      | 0.12+   | Visualização estatística  |
+| Tecnologia   | Versão | Finalidade                  |
+| ------------ | ------- | --------------------------- |
+| Python       | 3.8+    | Linguagem principal         |
+| Streamlit    | 1.28+   | Interface web               |
+| OpenCV       | 4.8+    | Processamento de imagens    |
+| Scikit-learn | 1.3+    | Machine learning            |
+| NumPy        | 1.24+   | Computação numérica      |
+| Pandas       | 2.0+    | Manipulação de dados      |
+| Matplotlib   | 3.7+    | Visualização de dados     |
+| Seaborn      | 0.12+   | Visualização estatística |
 
 ## ✨ Funcionalidades
 
@@ -186,10 +186,10 @@ venv\Scripts\activate
 
 # Opção 2: Ambiente Conda (Recomendado)
 # Criar ambiente com Python 3.10
-conda create -n visao_computacional python=3.10
+conda create -n {nome_ambiente} python=3.10
 
 # Ativar ambiente
-conda activate visao_computacional
+conda activate {nome_ambiente}
 
 # (Opcional) Para desativar o ambiente
 # conda deactivate
@@ -284,6 +284,6 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 
 ## 👨‍💻 Autor
 
-    João Guilherme - Desenvolvedor IA -[github.com/Joao-gui](https://github.com/Joao-gui?)
+  João Guilherme - Desenvolvedor IA -  [github.com/Joao-gui](https://github.com/Joao-gui?)
 
 ⭐ Se este projeto foi útil para você, considere dar uma estrela! ⭐
