@@ -94,7 +94,7 @@ def treinar_kmeans(lista_descritores_sift):
 # Gera o histogramas do BoVW
 def gerar_histogramas_bovw(lista_descritores_sift, modelo_kmeans, n_grupos):
     '''
-    Cibstrói histogramas globais para cada imagem usando a técnica Bag of Visual Words (BoVW)
+    Constrói histogramas globais para cada imagem usando a técnica Bag of Visual Words (BoVW)
 
     Args:
         lista_descritores_sift (lista de numpy arrays): Lista de arrats contendo os descritores SIFT para cada imagem. 
@@ -124,7 +124,7 @@ def gerar_histogramas_bovw(lista_descritores_sift, modelo_kmeans, n_grupos):
         histogramas.append(histogram)
     # Retorna uma matriz de tamanho num_imagens x num_clusters (tamanho de cada histograma)
     # essa matriz será salva em arquvivo como as features extraídas pelo método SIFT
-    return np.array(histogramas, dtype=object)
+    return np.array(histogramas)
 
 # Sift Treinamento
 def extrai_sift_treinamento(imagens, rotulos):

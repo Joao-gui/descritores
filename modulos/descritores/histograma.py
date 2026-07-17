@@ -6,15 +6,20 @@ from sklearn.decomposition import PCA
 from tqdm import tqdm
 
 # Extrai histograma escala de cinza
-def extrai_histograma_escala_cinza(imagens):
+def extrai_histograma_escala_cinza(imagens, pca=None, n_componentes=50):
     '''
     Extrai o histograma em escala de cinza de uma lista de imagens.
 
     Args:
         imagens (numpy.ndarray): Lista de imagens em formato array numpy.
+        pca (PCA, optional): Instância de PCA já treinada (fit) no conjunto de TREINO. Quando fornecida, é usada apenas para transformar (transform),
+            sem re-treinar. Quando None, um novo PCA é treinado (fit_transform) aqui mesmo — use isso apenas para o conjunto de treino.
+        n_componentes (int, optional): Número de componentes do PCA quando um novo PCA precisa ser treinado. Defaults to 50.
+
 
     Return:
         histogramas_reduzidos (numpy.ndarray): Array numpy contendo os histogramas de cada imagem.
+        pca (PCA): O PCA utilizado (recém-treinado ou o mesmo que foi passado), para ser reaproveitado na extração do outro conjunto (treino/teste).
     '''
     # Inicializa uma lista para armazenar os histogramas de cada imagem
     lista_histogramas = []
@@ -48,10 +53,10 @@ def extrai_histograma_escala_cinza(imagens):
 
     # REDUÇÃO DE DIMENSIONALIDADE COM PCA
     # n_components_pca: Número de componentes principais que serão mantidos
-    n_samples, n_features = histogramas_array.shape
-    n_components_pca = 50
+    if pca is None:
+        pca = PCA(n_components=n_componentes)
+        histogramas_reduzidos = pca.fit_transform(histogramas_array)
+    else:
+        histogramas_reduzidos = pca.transform(histogramas_array)
 
-    pca = PCA(n_components=n_components_pca)
-    histogramas_reduzidos = pca.fit_transform(histogramas_array)
-
-    return histogramas_reduzidos
+    return histogramas_reduzidos, pca

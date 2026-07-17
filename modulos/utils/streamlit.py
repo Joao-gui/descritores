@@ -7,6 +7,7 @@ import os
 import time
 import streamlit as st
 import pandas as pd
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 # ==========================================================
 # Módulos do projeto
@@ -92,7 +93,7 @@ def run():
     # ABAS
     # ==========================================================
 
-    tab_dataset, tab_caracteristicas, tab_treinamento, tab_resultadoos = st.tabs(
+    tab_dataset, tab_caracteristicas, tab_treinamento, tab_resultados = st.tabs(
         [
             "📂 Dataset",
             "🧬 Características",
@@ -250,9 +251,7 @@ def run():
         #st.sidebar.write(f"Total: {info['total']} imagens")
 
     else:
-        st.sidebar.error(
-            "O dataset deve possuir as pastas 'treino' e 'teste'."
-        )
+        st.sidebar.error("O dataset deve possuir as pastas 'treino' e 'teste'.")
 
     # ==========================================================
     # ABA - DATASET
@@ -371,30 +370,30 @@ def run():
 
                 # Escolher Descritor
                 if descritor == "Histograma":
-                    caracteristicas_treino = (
+                    caracteristicas_treino, pca_ajustado = (
                         histograma.extrai_histograma_escala_cinza(imagens_treino)
                     )
 
-                    caracteristicas_teste = (
-                        histograma.extrai_histograma_escala_cinza(imagens_teste)
+                    caracteristicas_teste, _ = (
+                        histograma.extrai_histograma_escala_cinza(imagens_teste, pca=pca_ajustado)
                     )
 
                 elif descritor == "HOG":
-                    caracteristicas_treino = (
+                    caracteristicas_treino, pca_ajustado = (
                         hog.extrair_hog(imagens_treino)
                     )
 
-                    caracteristicas_teste = (
-                        hog.extrair_hog(imagens_teste)
+                    caracteristicas_teste, _ = (
+                        hog.extrair_hog(imagens_teste, pca=pca_ajustado)
                     )
 
                 elif descritor == "LBP":
-                    caracteristicas_treino = (
+                    caracteristicas_treino, pca_ajustado = (
                         lbp.extrair_lbp(imagens_treino)
                     )
 
-                    caracteristicas_teste = (
-                        lbp.extrair_lbp(imagens_teste)
+                    caracteristicas_teste, _ = (
+                        lbp.extrair_lbp(imagens_teste, pca=pca_ajustado)
                     )
 
                 elif descritor == "SIFT":
@@ -461,96 +460,67 @@ def run():
 
         st.header("🤖 Treinamento do Modelo")
 
-
         if caracteristicas_treino is None:
-
-            st.warning(
-                "Primeiro extraia as características."
-            )
-
+            st.warning("Primeiro extraia as características.")
 
         elif rotulos_treino is None:
-
-            st.warning(
-                "Rótulos de treinamento não encontrados."
-            )
-
+            st.warning("Rótulos de treinamento não encontrados.")
 
         else:
-
-            st.write(
-                f"**Descritor:** {st.session_state.descritor}"
-            )
-
-            st.write(
-                f"**Classificador:** {classificador}"
-            )
-
+            st.write(f"**Descritor:** {st.session_state.descritor}")
+            st.write(f"**Classificador:** {classificador}")
 
             st.divider()
-
 
             treinar = st.button(
                 "🚀 Treinar Modelo",
                 use_container_width=True
             )
 
-
             if treinar:
-
                 inicio = time.time()
 
-
                 with st.spinner("Treinando modelo..."):
-
 
                     # ======================
                     # KNN
                     # ======================
 
                     if classificador == "KNN":
-
                         modelo = knn.treinar_knn(
                             caracteristicas_treino,
                             rotulos_treino
                         )
-
 
                     # ======================
                     # SVM
                     # ======================
 
                     elif classificador == "SVM":
-
                         modelo = svm.treinar_svm(
                             caracteristicas_treino,
                             rotulos_treino
                         )
-
 
                     # ======================
                     # MLP
                     # ======================
 
                     elif classificador == "MLP":
-
                         modelo = mlp.treinar_mlp(
                             caracteristicas_treino,
                             rotulos_treino
                         )
-
 
                     # ======================
                     # Random Forest
                     # ======================
 
                     elif classificador == "Random Forest":
-
                         modelo = random_forest.treinar_rf(
                             caracteristicas_treino,
                             rotulos_treino
                         )
-
 
                 tempo = round(time.time() - inicio, 2)
 
@@ -561,21 +531,151 @@ def run():
                 st.session_state.classificador = classificador
                 st.session_state.tempo_treinamento = tempo
 
-                st.success("Modelo treinado com sucesso!")
-
-
-                st.metric(
-                    "Tempo de treinamento",
-                    f"{tempo}s"
-                )
-
                 # Salvar modelo noo discoo
                 CAMINHO_MODELO = (f"modelos/{classificador}/modelo.pkl")
 
                 dados.salvar_modelo(modelo, CAMINHO_MODELO)
 
                 st.success("Modelo treinado e salvo com sucesso!")
-
                 st.metric("Tempo de treinamento", f"{tempo}")
-
                 st.write(f"Modelo salvo em: `{CAMINHO_MODELO}`")
+
+    # ==========================================================
+    # ABA - RESULTADO
+    # ==========================================================
+
+    with tab_resultados:
+
+        st.header("📊 Resultado")
+
+        modelo = st.session_state.modelo
+        caracteristicas_teste = st.session_state.caracteristicas_teste
+        rotulos_teste = st.session_state.rotulos_teste
+        encoder = st.session_state.encoder
+
+        if modelo is None:
+            st.warning("Treine um modelo antes de realizar a classificação.")
+
+        else:
+            st.write(f"**Descritores:** {st.session_state.descritor}")
+            st.write(f"**Classificador:** {st.session_state.classificador}")
+
+            if st.session_state.tempo_treinamento is not None:
+                st.write(f"**Tempo de treinamento:** {st.session_state.tempo_treinamento:.2f}s")
+
+            st.divider()
+
+            prever = st.button("🚀 Realizar Classificação", use_container_width=True)
+
+            if prever:
+                with st.spinner("Realizando classificação..."):
+
+                    # ==========================================
+                    # KNN
+                    # ==========================================
+                    if classificador == "KNN":
+                        rotulos_previstos = knn.testar_knn(modelo, caracteristicas_teste)
+
+                    # ==========================================
+                    # SVM
+                    # ==========================================
+                    elif classificador == "SVM":
+                        rotulos_previstos = svm.testar_svm(modelo, caracteristicas_teste)
+
+                    # ==========================================
+                    # MLP
+                    # ==========================================
+                    elif classificador == "MLP":
+                        rotulos_previstos = mlp.testar_mlp(modelo, caracteristicas_teste)
+
+                    # ==========================================
+                    # RANDOM FEOREST
+                    # ==========================================
+                    elif classificador == "Random Forest":
+                        rotulos_previstos = random_forest.testar_rf(modelo, caracteristicas_teste)
+
+                    st.session_state.rotulos_previstos = rotulos_previstos
+
+                st.success("Classificação realizada com sucesso!")
+
+                # ==================================================
+                # MÉTRICAS (Accuracy, precision, recall e f1)
+                # ==================================================
+
+                accuracy = accuracy_score(rotulos_teste, rotulos_previstos)
+                precision = precision_score(rotulos_teste, rotulos_previstos, average='weighted')
+                recall = recall_score(rotulos_teste, rotulos_previstos, average='weighted')
+                f1 = f1_score(rotulos_teste, rotulos_previstos, average='weighted')
+
+                # ==================================================
+                # CAMINHOS
+                # ==================================================
+                nomes_classes = encoder.classes_
+
+                CAMINHO_RESULTADOS = os.path.join(
+                    "resultados",
+                    dataset,
+                    descritor,
+                    classificador.replace(" ", "")
+                )
+
+                os.makedirs(CAMINHO_RESULTADOS, exist_ok=True)
+
+                caminho_matriz = os.path.join(
+                    CAMINHO_RESULTADOS,
+                    "matriz_confusao.png"
+                )
+
+                caminho_relatorio = os.path.join(
+                    CAMINHO_RESULTADOS,
+                    "realtorio_calssificacao.png"
+                )
+
+                metricas.matriz_confusao(
+                    nomes_das_classes=nomes_classes,
+                    rotulos_verdadeiros=rotulos_teste,
+                    rotulos_previstos=rotulos_previstos,
+                    caminho_arquivo=caminho_matriz
+                )
+
+                metricas.relatorio_classificacao(
+                    nomes_das_classes=nomes_classes,
+                    rotulos_verdadeiros=rotulos_teste,
+                    rotulos_previstos=rotulos_previstos,
+                    caminho_arquivo=caminho_relatorio,
+                )
+
+                st.divider()
+                
+                # ==================================================
+                # MATRIZ DE CONFUSÃO + MÉTRICAS
+                # ==================================================
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.subheader("Matriz Confusão")
+
+                    st.image(caminho_matriz, width=500) #width="stretch"
+
+                with col2:
+                    st.subheader("Métricas")
+
+                    st.metric("Accuracy", f"{accuracy*100:.2f}%")
+                    st.metric("Precision", f"{precision*100:.2f}%")
+                    st.metric("Recall", f"{recall*100:.2f}%")
+                    st.metric("F1-Score", f"{f1*100:.2f}%")
+
+                st.divider()
+
+                # ==================================================
+                # RELATÓRIO DE CLASSIFICAÇÃO
+                # ==================================================
+                st.subheader("Relatório de Classificação")
+
+                st.image(caminho_relatorio, width=800)
+                
+                st.success("Resultado gerado com sucesso!")
+
+                st.write("Arquivos salvos em:")
+
+                st.code(CAMINHO_RESULTADOS)

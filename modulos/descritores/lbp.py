@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 from tqdm import tqdm
 
 # Local Binary Pattern
-def extrair_lbp(imagens, raio=1, pontos=8):
+def extrair_lbp(imagens, raio=1, pontos=8, pca=None, n_componentes=50):
     '''
     Extrai o LBP dee uma lista de imagens
 
@@ -15,6 +15,10 @@ def extrair_lbp(imagens, raio=1, pontos=8):
         imagens (numpy.ndarray): Lista de imagens.
         raio (int, optional): Raio do círculo para o LBP. Defaults to 1.
         pontos (int, optional): Número de pontos no círculo para o LBP. Defaults to 8.
+        pca (PCA, optional): PCA já treinado (fit) no conjunto de TREINO. Quando fornecido, só é usado para transform (sem re-treinar). Quando None,
+            um novo PCA é treinado aqui (use isso apenas para o treino).
+        n_componentes (int, optional): Número de componentes do PCA quando um novo PCA precisa ser treinado. Defaults to 50.
+
 
     Return:
         Array numpy contendo os histogramas LBP de cada imagem
@@ -59,9 +63,10 @@ def extrair_lbp(imagens, raio=1, pontos=8):
     lbp_array = np.array(lista_lbp)
     # REDUÇÃO DA DIMENSIONALIDADE COM PCA
     # n_components_pca: Número de componentes principais que serão mantidos
-    n_samples, n_features = lbp_array.shape
-    n_components_pca = 50
-    pca = PCA(n_components=n_components_pca)
-    lbp_array_reduzido = pca.fit_transform(lbp_array)
+    if pca is None:
+        pca = PCA(n_components=n_componentes)
+        lbp_array_reduzido = pca.fit_transform(lbp_array)
+    else:
+        lbp_array_reduzido = pca.transform(lbp_array)
 
-    return lbp_array_reduzido
+    return lbp_array_reduzido, pca
